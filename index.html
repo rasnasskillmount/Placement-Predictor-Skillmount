@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placement Predictor | Career Path</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --brand-blue: #00a8ff;
+            --brand-blue-soft: #eef9ff;
+            --pure-white: #ffffff;
+            --text-main: #2d3436;
+            --text-light: #636e72;
+            --danger: #ff7675;
+            --success: #00b894;
+            --border-ui: #f1f2f6;
+            --shadow-ux: 0 20px 40px rgba(0, 168, 255, 0.08);
+        }
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', sans-serif; background: #f8fafc; margin: 0; padding: 20px;
+            color: var(--text-main); display: flex; flex-direction: column; align-items: center;
+        }
+        .logo { text-align: center; margin: 40px 0; }
+        .logo img { height: 180px; }
+        .box { 
+            max-width: 720px; width: 100%; background: var(--pure-white); padding: 40px; 
+            border-radius: 24px; box-shadow: var(--shadow-ux); margin-bottom: 50px;
+        }
+        h2 { font-weight: 800; font-size: 1.8rem; letter-spacing: -1px; margin-bottom: 25px; text-align: center; color: var(--brand-blue); }
+        #timerContainer {
+            display: none; position: sticky; top: 10px; z-index: 1000;
+            background: var(--brand-blue); color: white; padding: 10px 25px; 
+            border-radius: 50px; font-weight: 700; box-shadow: 0 10px 20px rgba(0, 168, 255, 0.2); margin-bottom: 20px;
+        }
+        .timer-warning { background: var(--danger) !important; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.7; } }
+        label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 8px; color: var(--text-light); }
+        input, select { 
+            width: 100%; padding: 16px; border-radius: 12px; border: 2px solid var(--border-ui); 
+            background: #fcfcfc; font-size: 1rem; margin-bottom: 20px; outline: none;
+        }
+        .btn-primary { 
+            background: var(--brand-blue); color: white; border: none; padding: 18px; 
+            border-radius: 14px; font-weight: 700; width: 100%; cursor: pointer; transition: 0.3s;
+        }
+        .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 168, 255, 0.3); }
+        
+        .question-card { background: #fff; border: 2px solid var(--border-ui); padding: 25px; border-radius: 18px; margin-bottom: 20px; }
+        .option-pill { display: flex; align-items: center; padding: 14px; margin-top: 10px; border-radius: 12px; border: 1px solid var(--border-ui); cursor: pointer; }
+        .option-pill:hover { background: var(--brand-blue-soft); }
+        .option-pill input { width: auto; margin-right: 15px; margin-bottom: 0; }
+        
+        .review-card { border-radius: 18px; padding: 20px; margin-bottom: 15px; border-left: 6px solid #ccc; }
+        .review-correct { background: #e6fffa; border-color: var(--success); }
+        .review-wrong { background: #fff5f5; border-color: var(--danger); }
+        .result-display { padding: 30px; border-radius: 15px; text-align: center; font-weight: 800; font-size: 1.5rem; margin: 20px 0; display: none; background: var(--brand-blue-soft); }
+        
+        .spinner { display: none; margin: 10px auto; width: 30px; height: 30px; border: 4px solid #f3f3f3; border-top: 4px solid var(--brand-blue); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="logo"><img src="Skillmount Blue.png" alt="Logo"></div>
+<div id="timerContainer"><i class="fas fa-clock"></i> Time Left: <span id="timeLeft">10:00</span></div>
+
+<div class="box" id="studentBox">
+    <h2><i class="fas fa-user-graduate"></i> Skillmount Predictor</h2>
+    <label>Full Name</label>
+    <input type="text" id="studentName" placeholder="Name">
+    <label>Phone Number</label>
+    <input type="tel" id="studentPhone" placeholder="Phone Number">
+    <button class="btn-primary" onclick="studentLogin()">Start Assessment</button>
+</div>
+
+<div class="box" id="testBox" style="display:none">
+    <h2 id="welcome">Assessment</h2>
+    <label>Select Your Job Role:</label>
+    <select id="course" onchange="loadQuestions()">
+        <option value="">-- Choose Your course --</option>
+        <option value="uae">Accounts(UAE)</option>
+        <option value="ksa">Accounts(KSA)</option>
+        <option value="atca">HR/Office Admin</option>
+        <option value="dataanalyist">Data Analyist</option>
+        <option value="logistics">Logistics</option>
+        <option value="aigeneralist">AI Generalist</option>
+        <option value="others">Others</option>
+    </select>
+    
+    <div id="questions"></div>
+
+    <div id="interestSection" style="display:none; margin-top: 30px; border-top: 2px dashed var(--border-ui); padding-top: 20px;">
+        <label style="color: var(--brand-blue); font-size: 1.1rem;">Which course are you interested in joining?</label>
+        <select id="interestedCourse">
+            <option value="">Select Your Stream</option>
+            <option value="BBA">BBA</option>
+            <option value="Bcom">Bcom</option>
+            <option value="BCA">BCA</option>
+            <option value="BSC">BSC</option>
+            <option value="BA">BA</option>
+            <option value="MBA">MBA</option>
+            <option value="Mcom">Mcom</option>
+            <option value="Others">Others</option>
+        </select>
+        <div id="loading" class="spinner"></div>
+        <button id="submitBtn" class="btn-primary" onclick="checkResult()">Submit Test</button>
+    </div>
+    
+    <div id="resultArea" style="display:none;">
+        <div id="resultDiv" class="result-display"></div>
+        <button id="pdfBtn" class="btn-primary" onclick="downloadPDF()" style="background: #2d3436; margin-bottom:30px;"><i class="fas fa-file-pdf"></i> Download Result PDF</button>
+        <h3 style="text-align:center; color: var(--text-light);">Review Answers</h3>
+        <div id="reviewList"></div>
+        <button onclick="location.reload()" class="btn-primary" style="background:none; color:var(--text-light); margin-top:20px;">Take Test Again</button>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAWS62gFaVKSUadKwcmVPFpEwKei5g8qGY",
+        authDomain: "placement-predictor-skillmount.firebaseapp.com",
+        projectId: "placement-predictor-skillmount",
+        storageBucket: "placement-predictor-skillmount.firebasestorage.app",
+        messagingSenderId: "1038162967890",
+        appId: "1:1038162967890:web:f15be54b8401e5cea6ce8b",
+        measurementId: "G-90VEKWL9RZ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let timerInterval;
+    const TEST_DURATION = 5 * 60;
+    const questionBank = {
+        uae: [
+            {q:"Average of 4 numbers is 20. Total?", options:["40","60","80","100"], answer:"80"},
+            {q:"Which language is the backbone of web structure?", options:["Python","HTML","Java","C++"], answer:"HTML"},
+            {q:"What is '101' in decimal?", options:["3","4","5","6"], answer:"5"},
+            {q:"Full form of SQL?", options:["Simple Query Language","Structured Query Language","Swift Query Link","Static Query List"], answer:"Structured Query Language"},
+            {q:"Which is a non-volatile memory?", options:["RAM","ROM","Cache","Register"], answer:"ROM"}
+        ],
+        ksa: [
+            {q:"Cost ₹500, Profit 20%. Selling Price?", options:["550","600","650","700"], answer:"600"},
+            {q:"Asset = Liabilities + ?", options:["Equity","Profit","Income","Debt"], answer:"Equity"},
+            {q:"Current GST rate in India (highest slab)?", options:["12%","18%","28%","35%"], answer:"28%"},
+            {q:"Which is a direct tax?", options:["GST","Excise Duty","Income Tax","Service Tax"], answer:"Income Tax"},
+            {q:"Who manages monetary policy in India?", options:["SBI","Ministry of Finance","RBI","NITI Aayog"], answer:"RBI"}
+        ],
+        atca: [
+            {q:"Product, Price, Place and...?", options:["People","Promotion","Plan","Profit"], answer:"Promotion"},
+            {q:"SWOT: 'W' stands for?", options:["Wealth","Weakness","Wisdom","Work"], answer:"Weakness"},
+            {q:"What is ROI?", options:["Risk of Interest","Return on Investment","Rate of Income","Right on Investment"], answer:"Return on Investment"},
+            {q:"Father of modern management?", options:["Peter Drucker","Steve Jobs","Elon Musk","Henry Ford"], answer:"Peter Drucker"},
+            {q:"Main aim of Marketing?", options:["Lowering cost","Customer Satisfaction","Hiring employees","Writing rules"], answer:"Customer Satisfaction"}
+        ],
+        dataanalyist: [
+            {q:"Demand increases, supply same. Price?", options:["Decreases","Remains same","Increases","Becomes zero"], answer:"Increases"},
+            {q:"Decisions based on rules and hierarchy is?", options:["Autocratic","Bureaucratic","Democratic","Creative"], answer:"Bureaucratic"},
+            {q:"What is a KPI?", options:["Key Profit Indicator","Key Performance Indicator","Key Price Index","Key Person Interest"], answer:"Key Performance Indicator"},
+            {q:"Long term debt is?", options:["Creditors","Bank Loan","Cash","Inventory"], answer:"Bank Loan"},
+            {q:"Employee retention means?", options:["Hiring new ones","Keeping existing ones","Firing ones","Training ones"], answer:"Keeping existing ones"}
+        ],
+        logistics: [
+            {q:"Best skill for content writing?", options:["Coding","Grammar & Creativity","Maths","Singing"], answer:"Grammar & Creativity"},
+            {q:"Soft skills include?", options:["Typing","Empathy","Accounting","Python"], answer:"Empathy"},
+            {q:"Active listening involves?", options:["Interrupting","Eye contact","Checking phone","Sleeping"], answer:"Eye contact"},
+            {q:"Employability means?", options:["Getting a degree","Skills to get a job","Working 24 hours","Only exams"], answer:"Skills to get a job"},
+            {q:"Teamwork requires?", options:["Competition","Cooperation","Isolation","Conflict"], answer:"Cooperation"}
+        ],
+        aigeneralist: [
+            {q:"AI stands for?", options:["Automated Intelligence","Artificial Intelligence","Advanced Intelligence","Applied Intelligence"], answer:"Artificial Intelligence"},
+            {q:"Machine Learning is a subset of?", options:["AI","Data Science","Robotics","Networking"], answer:"AI"},
+            {q:"Which is a programming language?", options:["HTML","CSS","Python","SQL"], answer:"Python"},
+            {q:"Neural Networks are inspired by?", options:["Computers","Human Brain","Robots","Animals"], answer:"Human Brain"},
+            {q:"Which is used for data visualization?", options:["TensorFlow","Tableau","Keras","NumPy"], answer:"Tableau"}
+        ],
+        others: [
+            {q:"What is 15% of 200?", options:["20","25","30","35"], answer:"30"},
+            {q:"HTML is used for?", options:["Styling","Structuring","Programming","Database"], answer:"Structuring"},
+            {q:"5 + 3 * 2 = ?", options:["16","11","21","13"], answer:"11"},
+            {q:"Full form of CPU?", options:["Central Process Unit","Central Processing Unit","Computer Personal Unit","Control Processing Unit"], answer:"Central Processing Unit"},
+            {q:"Which one is an input device?", options:["Monitor","Keyboard","Printer","Speaker"], answer:"Keyboard"}
+        ]
+    };
+
+    window.studentLogin = function() {
+        const name = document.getElementById("studentName").value.trim();
+        const phone = document.getElementById("studentPhone").value.trim();
+        if(!name || phone.length < 10) return alert("Please enter Name and 10-digit Phone.");
+        localStorage.setItem("studentName", name);
+        localStorage.setItem("studentPhone", phone);
+        document.getElementById("studentBox").style.display = "none";
+        document.getElementById("testBox").style.display = "block";
+    }
+
+    window.loadQuestions = function() {
+        const course = document.getElementById("course").value;
+        if(!course) return;
+        document.getElementById("course").disabled = true;
+        document.getElementById("questions").innerHTML = questionBank[course].map((item, i) => `
+            <div class="question-card">
+                <p><strong>${i+1}.</strong> ${item.q}</p>
+                ${item.options.map(opt => `<label class="option-pill"><input type="radio" name="q${i}" value="${opt}"> ${opt}</label>`).join('')}
+            </div>
+        `).join('');
+        document.getElementById("interestSection").style.display = "block";
+        startTimer();
+    }
+
+    function startTimer() {
+        let timeRemaining = TEST_DURATION;
+        document.getElementById("timerContainer").style.display = "block";
+        timerInterval = setInterval(() => {
+            let mins = Math.floor(timeRemaining / 60);
+            let secs = timeRemaining % 60;
+            document.getElementById("timeLeft").innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            if(timeRemaining <= 60) document.getElementById("timerContainer").classList.add("timer-warning");
+            if(timeRemaining <= 0) { clearInterval(timerInterval); checkResult(); }
+            timeRemaining--;
+        }, 1000);
+    }
+
+    window.checkResult = async function() {
+        const interest = document.getElementById("interestedCourse").value;
+        if(!interest) return alert("Select an interested course before submitting.");
+
+        document.getElementById("submitBtn").disabled = true;
+        document.getElementById("loading").style.display = "block";
+
+        clearInterval(timerInterval);
+        document.getElementById("timerContainer").style.display = "none";
+        const course = document.getElementById("course").value;
+        let score = 0;
+        let reviewHTML = "";
+
+        questionBank[course].forEach((q, i) => {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            const userAns = selected ? selected.value : "No Answer";
+            const isCorrect = userAns === q.answer;
+            if(isCorrect) score++;
+            reviewHTML += `<div class="review-card ${isCorrect ? 'review-correct' : 'review-wrong'}">
+                <p><strong>Q${i+1}:</strong> ${q.q}</p>
+                <p>Your Answer: ${userAns} ${!isCorrect ? ' | Correct: ' + q.answer : ''}</p>
+            </div>`;
+        });
+
+        const status = (score / questionBank[course].length) >= 0.6 ? "Placement Ready" : "Needs Training";
+        
+        try {
+            await addDoc(collection(db, "students"), {
+                name: localStorage.getItem("studentName"),
+                phone: localStorage.getItem("studentPhone"),
+                stream: course,
+                interest: interest,
+                score: `${score}/${questionBank[course].length}`,
+                status: status,
+                date: new Date().toLocaleString()
+            });
+
+            localStorage.setItem("lastResult", JSON.stringify({
+                name: localStorage.getItem("studentName"), 
+                score: `${score}/${questionBank[course].length}`, 
+                status: status
+            }));
+
+            document.getElementById("questions").style.display = "none";
+            document.getElementById("interestSection").style.display = "none";
+            document.getElementById("resultArea").style.display = "block";
+            document.getElementById("resultDiv").innerHTML = `Final Score: ${score}/${questionBank[course].length} <br> ${status}`;
+            document.getElementById("resultDiv").style.display = "block";
+            document.getElementById("reviewList").innerHTML = reviewHTML;
+        } catch (e) {
+            alert("Error saving result. Check connection.");
+            document.getElementById("submitBtn").disabled = false;
+        } finally {
+            document.getElementById("loading").style.display = "none";
+        }
+    }
+
+    window.downloadPDF = function() {
+        const data = JSON.parse(localStorage.getItem("lastResult"));
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.setFontSize(22); doc.setTextColor(0, 168, 255); doc.text("Skillmount Predictor Report", 20, 20);
+        doc.setFontSize(14); doc.setTextColor(0,0,0);
+        doc.text(`Student: ${data.name}`, 20, 40);
+        doc.text(`Score: ${data.score}`, 20, 50);
+        doc.text(`Status: ${data.status}`, 20, 60);
+        doc.save(`${data.name}_Result.pdf`);
+    }
+</script>
+</body>
+</html>

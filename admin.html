@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel | Skillmount</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --brand: #00a8ff; --bg: #f8fafc; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); padding: 40px; }
+        .admin-container { max-width: 1100px; margin: 0 auto; display: none; }
+        .search-box { width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #ddd; }
+        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: var(--brand); color: white; }
+        .status { font-weight: bold; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; }
+        .ready { background: #e6fffa; color: #00b894; }
+        .needs-work { background: #fff5f5; color: #ff7675; }
+        .btn-export { background: #27ae60; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; float: right; }
+    </style>
+</head>
+<body>
+
+<div id="loginOverlay" style="text-align:center; margin-top: 100px;">
+    <h2>Admin Dashboard</h2>
+    <input type="password" id="adminPass" placeholder="Enter Password" style="padding:10px; border-radius:8px; border:1px solid #ccc;">
+    <button onclick="checkPass()" style="padding:10px 20px; background:var(--brand); color:white; border:none; border-radius:8px; cursor:pointer;">Login</button>
+</div>
+
+<div class="admin-container" id="adminContent">
+    <button class="btn-export" onclick="exportToCSV()"><i class="fas fa-file-excel"></i> Export CSV</button>
+    <h1>Student Leads</h1>
+    <input type="text" id="searchInput" class="search-box" placeholder="Search by name or phone..." onkeyup="filterTable()">
+    
+    <table id="leadTable">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Job Role</th>
+                <th>Stream</th>
+                <th>Score</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+    </table>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAWS62gFaVKSUadKwcmVPFpEwKei5g8qGY",
+        authDomain: "placement-predictor-skillmount.firebaseapp.com",
+        projectId: "placement-predictor-skillmount",
+        storageBucket: "placement-predictor-skillmount.firebasestorage.app",
+        messagingSenderId: "1038162967890",
+        appId: "1:1038162967890:web:f15be54b8401e5cea6ce8b",
+        measurementId: "G-90VEKWL9RZ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    let allLeads = [];
+
+    window.checkPass = function() {
+        if(document.getElementById("adminPass").value === "Skillmount@2025") {
+            document.getElementById("loginOverlay").style.display = "none";
+            document.getElementById("adminContent").style.display = "block";
+            loadLeads();
+        } else { alert("Access Denied"); }
+    }
+
+    async function loadLeads() {
+        const q = query(collection(db, "students"), orderBy("date", "desc"));
+        const snapshot = await getDocs(q);
+        const tbody = document.getElementById("tbody");
+        tbody.innerHTML = "";
+        allLeads = [];
+        snapshot.forEach(doc => {
+            const d = doc.data();
+            allLeads.push(d);
+            tbody.innerHTML += `<tr>
+                <td>${d.date}</td>
+                <td>${d.name}</td>
+                <td>${d.phone}</td>
+                <td>${d.stream ? d.stream.toUpperCase() : 'N/A'}</td>
+                <td><strong>${d.interest || 'N/A'}</strong></td>
+                <td>${d.score}</td>
+                <td><span class="status ${d.status === 'Placement Ready' ? 'ready' : 'needs-work'}">${d.status}</span></td>
+            </tr>`;
+        });
+    }
+
+    window.filterTable = function() {
+        const q = document.getElementById("searchInput").value.toLowerCase();
+        const rows = document.querySelectorAll("#tbody tr");
+        rows.forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(q) ? "" : "none";
+        });
+    }
+
+    window.exportToCSV = function() {
+        let csv = "Date,Name,Phone,Stream,Interest,Score,Status\n";
+        allLeads.forEach(l => { csv += `"${l.date}","${l.name}","${l.phone}","${l.stream}","${l.interest}","${l.score}","${l.status}"\n`; });
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'Skillmount_Leads.csv';
+        a.click();
+    }
+</script>
+</body>
+</html>
