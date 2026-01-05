@@ -84,6 +84,7 @@
         <option value="">-- Choose Your course --</option>
         <option value="uae">Accounts(UAE)</option>
         <option value="ksa">Accounts(KSA)</option>
+        <option value="dm">Digital Marketing</option>
         <option value="atca">HR/Office Admin</option>
         <option value="dataanalyist">Data Analyist</option>
         <option value="logistics">Logistics</option>
@@ -141,11 +142,11 @@
     const TEST_DURATION = 5 * 60;
     const questionBank = {
         uae: [
-            {q:"Average of 4 numbers is 20. Total?", options:["40","60","80","100"], answer:"80"},
-            {q:"Which language is the backbone of web structure?", options:["Python","HTML","Java","C++"], answer:"HTML"},
-            {q:"What is '101' in decimal?", options:["3","4","5","6"], answer:"5"},
-            {q:"Full form of SQL?", options:["Simple Query Language","Structured Query Language","Swift Query Link","Static Query List"], answer:"Structured Query Language"},
-            {q:"Which is a non-volatile memory?", options:["RAM","ROM","Cache","Register"], answer:"ROM"}
+            {q:"Which of the following best describes Accounting?", options:["Recording only cash transactions of a business","Recording, organizing, analyzing, and interpreting financial transactions","Preparing financial statements only at year-end","Managing business operations and marketing"], answer:"Recording, organizing, analyzing, and interpreting financial transactions"},
+            {q:"What is the main purpose of preparing a Trading Account?", options:["To calculate net profit or net loss","To determine the financial position of a business","To calculate gross profit or gross loss from trading activities","To record cash receipts and payments"], answer:"To calculate gross profit or gross loss from trading activities"},
+            {q:"Which journal entry is correct for recording a credit sale?", options:["Debit Cash Account and Credit Sales Account","Debit Sales Account and Credit Accounts Receivable","Debit Accounts Receivable and Credit Sales Revenue","Debit Purchases Account and Credit Sales Account"], answer:"Debit Accounts Receivable and Credit Sales Revenue"},
+            {q:"Gross Profit Ratio is calculated using which of the following formulas?", options:["(Net Profit ÷ Net Sales) × 100","(Gross Profit ÷ Cost of Goods Sold) × 100","(Gross Profit ÷ Net Sales) × 100","(Net Sales ÷ Gross Profit) × 100"], answer:"(Gross Profit ÷ Net Sales) × 100"},
+            {q:"Depreciation refers to:", options:["Increase in the market value of an asset","Allocation of the cost of a tangible asset over its useful life","Writing off bad debts","Recording repairs of fixed assets"], answer:"Allocation of the cost of a tangible asset over its useful life"}
         ],
         ksa: [
             {q:"What best defines Accounting?", options:["The process of recording only cash transactions","The process of recording, classifying, analyzing, and interpreting financial information","The preparation of financial statements only","The management of business operations"], answer:"The process of recording, classifying, analyzing, and interpreting financial information"},
@@ -154,40 +155,46 @@
             {q:"Gross Profit Ratio is calculated by using which of the following formulas?", options:["(Net Profit ÷ Net Sales) × 100","(Gross Profit ÷ Total Assets) × 100","(Gross Profit ÷ Net Sales) × 100","(Net Sales ÷ Cost of Goods Sold) × 100"], answer:"(Gross Profit ÷ Net Sales) × 100"},
             {q:"Depreciation is best described as:", options:["An increase in the market value of an asset","Allocation of the cost of a tangible asset over its useful life","Recording repair expenses of fixed assets","Writing off intangible assets only"], answer:"Allocation of the cost of a tangible asset over its useful life"}
         ],
+         dm: [
+            {q:"What does the term 'organic reach' mean in digital marketing?", options:["Reach generated through paid advertisements","Reach obtained from influencer campaigns","Reach achieved without paid promotion","Reach generated through display ads only"], answer:"Reach achieved without paid promotion"},
+            {q:"What is the main purpose of using keywords in SEO?", options:["To increase website loading speed","To help search engines understand webpage content","To design better website layouts","To improve social media engagement"], answer:"To help search engines understand webpage content"},
+            {q:"Which metric measures the percentage of users who leave a website without interacting further?", options:["Conversion rate","Click-through rate","Bounce rate","Impression rate"], answer:"Bounce rate"},
+            {q:"In email marketing, what does segmentation refer to?", options:["Measuring email open rates","Dividing email lists based on subscriber characteristics","Sending the same email to all users","Tracking unsubscribe rates"], answer:"Dividing email lists based on subscriber characteristics"},
+            {q:"What is the primary purpose of Google Analytics?", options:["Creating paid ad campaigns","Managing social media accounts","Tracking and analyzing website traffic and user behavior","Designing website layouts"], answer:"Tracking and analyzing website traffic and user behavior"}
         atca: [
-            {q:"Product, Price, Place and...?", options:["People","Promotion","Plan","Profit"], answer:"Promotion"},
-            {q:"SWOT: 'W' stands for?", options:["Wealth","Weakness","Wisdom","Work"], answer:"Weakness"},
-            {q:"What is ROI?", options:["Risk of Interest","Return on Investment","Rate of Income","Right on Investment"], answer:"Return on Investment"},
-            {q:"Father of modern management?", options:["Peter Drucker","Steve Jobs","Elon Musk","Henry Ford"], answer:"Peter Drucker"},
-            {q:"Main aim of Marketing?", options:["Lowering cost","Customer Satisfaction","Hiring employees","Writing rules"], answer:"Customer Satisfaction"}
+            {q:"Human Resource Management (HRM) is best defined as:", options:["Managing only employee salaries and benefits","The study of activities related to people working in an organization","Handling customer relations in an organization","Supervising production and operations"], answer:"The study of activities related to people working in an organization"},
+            {q:"What is the main purpose of Job Analysis?", options:["To determine employee salaries","To describe job duties and identify required skills and qualifications","To evaluate employee performance","To design organizational policies"], answer:"To describe job duties and identify required skills and qualifications"},
+            {q:"Which of the following correctly explains the difference between recruitment and selection?", options:["Recruitment selects candidates; selection attracts candidates","Recruitment evaluates candidates; selection advertises vacancies","Recruitment attracts applicants; selection chooses the most suitable candidate","Recruitment and selection mean the same"], answer:"Recruitment attracts applicants; selection chooses the most suitable candidate"},
+            {q:"Which MS Word feature helps maintain consistent formatting throughout a document?", options:["Find and Replace","Templates","Styles","Mail Merge"], answer:"Styles"},
+            {q:"What is the primary purpose of Mail Merge in MS Word?", options:["To protect confidential documents","To format long reports","To send personalized documents to multiple recipients","To insert images and logos"], answer:"To send personalized documents to multiple recipients"}
         ],
         dataanalyist: [
-            {q:"Demand increases, supply same. Price?", options:["Decreases","Remains same","Increases","Becomes zero"], answer:"Increases"},
-            {q:"Decisions based on rules and hierarchy is?", options:["Autocratic","Bureaucratic","Democratic","Creative"], answer:"Bureaucratic"},
-            {q:"What is a KPI?", options:["Key Profit Indicator","Key Performance Indicator","Key Price Index","Key Person Interest"], answer:"Key Performance Indicator"},
-            {q:"Long term debt is?", options:["Creditors","Bank Loan","Cash","Inventory"], answer:"Bank Loan"},
-            {q:"Employee retention means?", options:["Hiring new ones","Keeping existing ones","Firing ones","Training ones"], answer:"Keeping existing ones"}
+            {q:"Which of the following is a primary responsibility of a data analyst?", options:["Writing marketing content","Collecting, cleaning, and interpreting data","Designing company logos","Managing office supplies"], answer:"Collecting, cleaning, and interpreting data"},
+            {q:"In data analysis, what does 'data cleaning' involve?", options:["Printing reports","Removing errors, duplicates, or irrelevant data","Designing charts and graphs","Sending data to clients"], answer:"Removing errors, duplicates, or irrelevant data"},
+            {q:"Which tool is commonly used by data analysts for statistical analysis and visualization?", options:["Adobe Photoshop","Microsoft Excel","AutoCAD","Final Cut Pro"], answer:"Microsoft Excel"},
+            {q:"What is the purpose of using pivot tables in Excel?", options:["To edit images","To summarize and analyze large datasets quickly","To program macros","To create presentations"], answer:"To summarize and analyze large datasets quickly"},
+            {q:"Which of the following best describes 'data visualization'?", options:["Storing data in spreadsheets","Representing data using charts, graphs, and dashboards","Cleaning raw data","Sending emails with data"], answer:"Representing data using charts, graphs, and dashboards"}
         ],
         logistics: [
-            {q:"Best skill for content writing?", options:["Coding","Grammar & Creativity","Maths","Singing"], answer:"Grammar & Creativity"},
-            {q:"Soft skills include?", options:["Typing","Empathy","Accounting","Python"], answer:"Empathy"},
-            {q:"Active listening involves?", options:["Interrupting","Eye contact","Checking phone","Sleeping"], answer:"Eye contact"},
-            {q:"Employability means?", options:["Getting a degree","Skills to get a job","Working 24 hours","Only exams"], answer:"Skills to get a job"},
-            {q:"Teamwork requires?", options:["Competition","Cooperation","Isolation","Conflict"], answer:"Cooperation"}
+            {q:"What is the primary objective of logistics in a business?", options:["Increasing production speed","Ensuring the right product reaches the right place at the right time","Hiring new employees","Reducing office expenses"], answer:"Ensuring the right product reaches the right place at the right time"},
+            {q:"Which of the following is NOT a key function of logistics?", options:["Transportation of goods","Inventory management","Employee recruitment","Warehousing"], answer:"Employee recruitment"},
+            {q:"What is the term for storing goods until they are needed in the supply chain?", options:["Distribution","Inventory","Warehousing","Procurement"], answer:"Warehousing"},
+            {q:"Which mode of transport is usually fastest for long-distance international shipments?", options:["Road","Rail","Air","Sea"], answer:"Air"},
+            {q:"In logistics, what does 'last mile delivery' refer to?", options:["Transporting goods from factory to warehouse","Delivering goods from the warehouse to the final customer","Moving goods between warehouses","Shipping goods internationally"], answer:"Delivering goods from the warehouse to the final customer"}
         ],
         aigeneralist: [
-            {q:"AI stands for?", options:["Automated Intelligence","Artificial Intelligence","Advanced Intelligence","Applied Intelligence"], answer:"Artificial Intelligence"},
-            {q:"Machine Learning is a subset of?", options:["AI","Data Science","Robotics","Networking"], answer:"AI"},
-            {q:"Which is a programming language?", options:["HTML","CSS","Python","SQL"], answer:"Python"},
-            {q:"Neural Networks are inspired by?", options:["Computers","Human Brain","Robots","Animals"], answer:"Human Brain"},
-            {q:"Which is used for data visualization?", options:["TensorFlow","Tableau","Keras","NumPy"], answer:"Tableau"}
+            {q:"What is the main goal of Artificial Intelligence?", options:["To replace all humans in the workforce","To create machines that can perform tasks requiring human intelligence","To store large amounts of data","To make computers run faster"], answer:"To create machines that can perform tasks requiring human intelligence"},
+            {q:"Which of the following is an example of a narrow AI system?", options:["A robot that can perform any human task","Google Maps suggesting the fastest route","An AI that can learn any new skill like a human","An AI that designs a spaceship autonomously"], answer:"Google Maps suggesting the fastest route"},
+            {q:"What does 'machine learning' allow AI systems to do?", options:["Memorize all data without analysis","Improve performance automatically from experience without being explicitly programmed","Function without electricity","Replace computer hardware"], answer:"Improve performance automatically from experience without being explicitly programmed"},
+            {q:"Which of the following is a common programming language used in AI development?", options:["Python","HTML","CSS","SQL"], answer:"Python"},
+            {q:"What is 'Natural Language Processing (NLP)' used for in AI?", options:["To recognize and process human language in text or speech","To calculate mathematical formulas faster","To store large datasets","To run video games"], answer:"To recognize and process human language in text or speech"}
         ],
         others: [
-            {q:"What is 15% of 200?", options:["20","25","30","35"], answer:"30"},
-            {q:"HTML is used for?", options:["Styling","Structuring","Programming","Database"], answer:"Structuring"},
-            {q:"5 + 3 * 2 = ?", options:["16","11","21","13"], answer:"11"},
-            {q:"Full form of CPU?", options:["Central Process Unit","Central Processing Unit","Computer Personal Unit","Control Processing Unit"], answer:"Central Processing Unit"},
-            {q:"Which one is an input device?", options:["Monitor","Keyboard","Printer","Speaker"], answer:"Keyboard"}
+            {q:"What is the best way to handle a conflict with a coworker?", options:["Ignore the problem and hope it goes away","Discuss the issue calmly and try to find a solution","Complain to everyone about the coworker","Quit the job immediately"], answer:"Discuss the issue calmly and try to find a solution"},
+            {q:"Which of the following shows good time management?", options:["Completing tasks only when reminded","Prioritizing tasks and meeting deadlines consistently","Doing multiple tasks at once without planning","Avoiding difficult tasks"], answer:"Prioritizing tasks and meeting deadlines consistently"},
+            {q:"When faced with a new task you don’t know how to do, what should you do?", options:["Ignore it and hope someone else does it","Learn and research how to complete it properly","Pretend you know how to do it","Complain to your supervisor"], answer:"Learn and research how to complete it properly"},
+            {q:"Why is it important to work well in a team?", options:["Teams always make decisions for you","Teamwork improves productivity and problem-solving","You don’t have to do any work if in a team","It shows that you avoid responsibility"], answer:"Teamwork improves productivity and problem-solving"},
+            {q:"What is the most professional way to respond to feedback?", options:["Ignore it","Get defensive and argue","Listen carefully, accept constructive criticism, and improve","Tell everyone the feedback was unfair"], answer:"Listen carefully, accept constructive criticism, and improve"}
         ]
     };
 
@@ -300,3 +307,4 @@
 </body>
 
 </html>
+
