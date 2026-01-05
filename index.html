@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placement Predictor | Career Path</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --brand-blue: #00a8ff;
+            --brand-blue-soft: #eef9ff;
+            --pure-white: #ffffff;
+            --text-main: #2d3436;
+            --text-light: #636e72;
+            --danger: #ff7675;
+            --success: #00b894;
+            --border-ui: #f1f2f6;
+            --shadow-ux: 0 20px 40px rgba(0, 168, 255, 0.08);
+        }
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', sans-serif; background: #f8fafc; margin: 0; padding: 20px;
+            color: var(--text-main); display: flex; flex-direction: column; align-items: center;
+        }
+        .logo { text-align: center; margin: 40px 0; }
+        .logo img { height: 180px; }
+        .box { 
+            max-width: 720px; width: 100%; background: var(--pure-white); padding: 40px; 
+            border-radius: 24px; box-shadow: var(--shadow-ux); margin-bottom: 50px;
+        }
+        h2 { font-weight: 800; font-size: 1.8rem; letter-spacing: -1px; margin-bottom: 25px; text-align: center; color: var(--brand-blue); }
+        #timerContainer {
+            display: none; position: sticky; top: 10px; z-index: 1000;
+            background: var(--brand-blue); color: white; padding: 10px 25px; 
+            border-radius: 50px; font-weight: 700; box-shadow: 0 10px 20px rgba(0, 168, 255, 0.2); margin-bottom: 20px;
+        }
+        .timer-warning { background: var(--danger) !important; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.7; } }
+        label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 8px; color: var(--text-light); }
+        input, select { 
+            width: 100%; padding: 16px; border-radius: 12px; border: 2px solid var(--border-ui); 
+            background: #fcfcfc; font-size: 1rem; margin-bottom: 20px; outline: none;
+        }
+        .btn-primary { 
+            background: var(--brand-blue); color: white; border: none; padding: 18px; 
+            border-radius: 14px; font-weight: 700; width: 100%; cursor: pointer; transition: 0.3s;
+        }
+        .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 168, 255, 0.3); }
+        
+        .question-card { background: #fff; border: 2px solid var(--border-ui); padding: 25px; border-radius: 18px; margin-bottom: 20px; }
+        .option-pill { display: flex; align-items: center; padding: 14px; margin-top: 10px; border-radius: 12px; border: 1px solid var(--border-ui); cursor: pointer; }
+        .option-pill:hover { background: var(--brand-blue-soft); }
+        .option-pill input { width: auto; margin-right: 15px; margin-bottom: 0; }
+        
+        .review-card { border-radius: 18px; padding: 20px; margin-bottom: 15px; border-left: 6px solid #ccc; }
+        .review-correct { background: #e6fffa; border-color: var(--success); }
+        .review-wrong { background: #fff5f5; border-color: var(--danger); }
+        .result-display { padding: 30px; border-radius: 15px; text-align: center; font-weight: 800; font-size: 1.5rem; margin: 20px 0; display: none; background: var(--brand-blue-soft); }
+        
+        .spinner { display: none; margin: 10px auto; width: 30px; height: 30px; border: 4px solid #f3f3f3; border-top: 4px solid var(--brand-blue); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="logo"><img src="Skillmount Blue.png" alt="Logo"></div>
+<div id="timerContainer"><i class="fas fa-clock"></i> Time Left: <span id="timeLeft">10:00</span></div>
+
+<div class="box" id="studentBox">
+    <h2><i class="fas fa-user-graduate"></i> Skillmount Predictor</h2>
+    <label>Full Name</label>
+    <input type="text" id="studentName" placeholder="Name">
+    <label>Phone Number</label>
+    <input type="tel" id="studentPhone" placeholder="Phone Number">
+    <button class="btn-primary" onclick="studentLogin()">Start Assessment</button>
+</div>
+
+<div class="box" id="testBox" style="display:none">
+    <h2 id="welcome">Assessment</h2>
+    <label>Select Your Job Role:</label>
+    <select id="course" onchange="loadQuestions()">
+        <option value="">-- Choose Your course --</option>
+        <option value="uae">Accounts(UAE)</option>
+        <option value="ksa">Accounts(KSA)</option>
+        <option value="dm">Digital Marketing</option>
+        <option value="atca">HR/Office Admin</option>
+        <option value="dataanalyist">Data Analyist</option>
+        <option value="logistics">Logistics</option>
+        <option value="aigeneralist">AI Generalist</option>
+        <option value="others">Others</option>
+    </select>
+    
+    <div id="questions"></div>
+
+    <div id="interestSection" style="display:none; margin-top: 30px; border-top: 2px dashed var(--border-ui); padding-top: 20px;">
+        <label style="color: var(--brand-blue); font-size: 1.1rem;">Which course are you interested in joining?</label>
+        <select id="interestedCourse">
+            <option value="">Select Your Stream</option>
+            <option value="BBA">BBA</option>
+            <option value="Bcom">Bcom</option>
+            <option value="BCA">BCA</option>
+            <option value="BSC">BSC</option>
+            <option value="BA">BA</option>
+            <option value="MBA">MBA</option>
+            <option value="Mcom">Mcom</option>
+            <option value="Others">Others</option>
+        </select>
+        <div id="loading" class="spinner"></div>
+        <button id="submitBtn" class="btn-primary" onclick="checkResult()">Submit Test</button>
+    </div>
+    
+    <div id="resultArea" style="display:none;">
+        <div id="resultDiv" class="result-display"></div>
+        <button id="pdfBtn" class="btn-primary" onclick="downloadPDF()" style="background: #2d3436; margin-bottom:30px;"><i class="fas fa-file-pdf"></i> Download Result PDF</button>
+        <h3 style="text-align:center; color: var(--text-light);">Review Answers</h3>
+        <div id="reviewList"></div>
+        <button onclick="location.reload()" class="btn-primary" style="background:none; color:var(--text-light); margin-top:20px;">Take Test Again</button>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAWS62gFaVKSUadKwcmVPFpEwKei5g8qGY",
+        authDomain: "placement-predictor-skillmount.firebaseapp.com",
+        projectId: "placement-predictor-skillmount",
+        storageBucket: "placement-predictor-skillmount.firebasestorage.app",
+        messagingSenderId: "1038162967890",
+        appId: "1:1038162967890:web:f15be54b8401e5cea6ce8b",
+        measurementId: "G-90VEKWL9RZ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let timerInterval;
+    const TEST_DURATION = 5 * 60;
+    const questionBank = {
+        uae: [
+            {q:"Which of the following best describes Accounting?", options:["Recording only cash transactions of a business","Recording, organizing, analyzing, and interpreting financial transactions","Preparing financial statements only at year-end","Managing business operations and marketing"], answer:"Recording, organizing, analyzing, and interpreting financial transactions"},
+            {q:"What is the main purpose of preparing a Trading Account?", options:["To calculate net profit or net loss","To determine the financial position of a business","To calculate gross profit or gross loss from trading activities","To record cash receipts and payments"], answer:"To calculate gross profit or gross loss from trading activities"},
+            {q:"Which journal entry is correct for recording a credit sale?", options:["Debit Cash Account and Credit Sales Account","Debit Sales Account and Credit Accounts Receivable","Debit Accounts Receivable and Credit Sales Revenue","Debit Purchases Account and Credit Sales Account"], answer:"Debit Accounts Receivable and Credit Sales Revenue"},
+            {q:"Gross Profit Ratio is calculated using which of the following formulas?", options:["(Net Profit ÷ Net Sales) × 100","(Gross Profit ÷ Cost of Goods Sold) × 100","(Gross Profit ÷ Net Sales) × 100","(Net Sales ÷ Gross Profit) × 100"], answer:"(Gross Profit ÷ Net Sales) × 100"},
+            {q:"Depreciation refers to:", options:["Increase in the market value of an asset","Allocation of the cost of a tangible asset over its useful life","Writing off bad debts","Recording repairs of fixed assets"], answer:"Allocation of the cost of a tangible asset over its useful life"}
+        ],
+        ksa: [
+            {q:"What best defines Accounting?", options:["The process of recording only cash transactions","The process of recording, classifying, analyzing, and interpreting financial information","The preparation of financial statements only","The management of business operations"], answer:"The process of recording, classifying, analyzing, and interpreting financial information"},
+            {q:"What is the primary purpose of preparing a Trading Account?", options:["To calculate net profit or net loss","To determine the financial position of the business","To calculate gross profit or gross loss from trading activities","To record cash inflows and outflows"], answer:"To calculate gross profit or gross loss from trading activities"},
+            {q:"Which journal entry is correct for recording a credit sale?", options:["Debit Sales Account and Credit Cash Account","Debit Cash Account and Credit Sales Account","Debit Accounts Receivable and Credit Sales Account","Debit Purchases Account and Credit Accounts Receivable"], answer:"Debit Accounts Receivable and Credit Sales Account"},
+            {q:"Gross Profit Ratio is calculated by using which of the following formulas?", options:["(Net Profit ÷ Net Sales) × 100","(Gross Profit ÷ Total Assets) × 100","(Gross Profit ÷ Net Sales) × 100","(Net Sales ÷ Cost of Goods Sold) × 100"], answer:"(Gross Profit ÷ Net Sales) × 100"},
+            {q:"Depreciation is best described as:", options:["An increase in the market value of an asset","Allocation of the cost of a tangible asset over its useful life","Recording repair expenses of fixed assets","Writing off intangible assets only"], answer:"Allocation of the cost of a tangible asset over its useful life"}
+        ],
+        dm: [
+            {q:"What does the term 'organic reach' mean in digital marketing?", options:["Reach generated through paid advertisements","Reach obtained from influencer campaigns","Reach achieved without paid promotion","Reach generated through display ads only"], answer:"Reach achieved without paid promotion"},
+            {q:"What is the main purpose of using keywords in SEO?", options:["To increase website loading speed","To help search engines understand webpage content","To design better website layouts","To improve social media engagement"], answer:"To help search engines understand webpage content"},
+            {q:"Which metric measures the percentage of users who leave a website without interacting further?", options:["Conversion rate","Click-through rate","Bounce rate","Impression rate"], answer:"Bounce rate"},
+            {q:"In email marketing, what does segmentation refer to?", options:["Measuring email open rates","Dividing email lists based on subscriber characteristics","Sending the same email to all users","Tracking unsubscribe rates"], answer:"Dividing email lists based on subscriber characteristics"},
+            {q:"What is the primary purpose of Google Analytics?", options:["Creating paid ad campaigns","Managing social media accounts","Tracking and analyzing website traffic and user behavior","Designing website layouts"], answer:"Tracking and analyzing website traffic and user behavior"}
+        ],
+        atca: [
+            {q:"Human Resource Management (HRM) is best defined as:", options:["Managing only employee salaries and benefits","The study of activities related to people working in an organization","Handling customer relations in an organization","Supervising production and operations"], answer:"The study of activities related to people working in an organization"},
+            {q:"What is the main purpose of Job Analysis?", options:["To determine employee salaries","To describe job duties and identify required skills and qualifications","To evaluate employee performance","To design organizational policies"], answer:"To describe job duties and identify required skills and qualifications"},
+            {q:"Which of the following correctly explains the difference between recruitment and selection?", options:["Recruitment selects candidates; selection attracts candidates","Recruitment evaluates candidates; selection advertises vacancies","Recruitment attracts applicants; selection chooses the most suitable candidate","Recruitment and selection mean the same"], answer:"Recruitment attracts applicants; selection chooses the most suitable candidate"},
+            {q:"Which MS Word feature helps maintain consistent formatting throughout a document?", options:["Find and Replace","Templates","Styles","Mail Merge"], answer:"Styles"},
+            {q:"What is the primary purpose of Mail Merge in MS Word?", options:["To protect confidential documents","To format long reports","To send personalized documents to multiple recipients","To insert images and logos"], answer:"To send personalized documents to multiple recipients"}
+        ],
+        dataanalyist: [
+            {q:"Which of the following is a primary responsibility of a data analyst?", options:["Writing marketing content","Collecting, cleaning, and interpreting data","Designing company logos","Managing office supplies"], answer:"Collecting, cleaning, and interpreting data"},
+            {q:"In data analysis, what does 'data cleaning' involve?", options:["Printing reports","Removing errors, duplicates, or irrelevant data","Designing charts and graphs","Sending data to clients"], answer:"Removing errors, duplicates, or irrelevant data"},
+            {q:"Which tool is commonly used by data analysts for statistical analysis and visualization?", options:["Adobe Photoshop","Microsoft Excel","AutoCAD","Final Cut Pro"], answer:"Microsoft Excel"},
+            {q:"What is the purpose of using pivot tables in Excel?", options:["To edit images","To summarize and analyze large datasets quickly","To program macros","To create presentations"], answer:"To summarize and analyze large datasets quickly"},
+            {q:"Which of the following best describes 'data visualization'?", options:["Storing data in spreadsheets","Representing data using charts, graphs, and dashboards","Cleaning raw data","Sending emails with data"], answer:"Representing data using charts, graphs, and dashboards"}
+        ],
+        logistics: [
+            {q:"What is the primary objective of logistics in a business?", options:["Increasing production speed","Ensuring the right product reaches the right place at the right time","Hiring new employees","Reducing office expenses"], answer:"Ensuring the right product reaches the right place at the right time"},
+            {q:"Which of the following is NOT a key function of logistics?", options:["Transportation of goods","Inventory management","Employee recruitment","Warehousing"], answer:"Employee recruitment"},
+            {q:"What is the term for storing goods until they are needed in the supply chain?", options:["Distribution","Inventory","Warehousing","Procurement"], answer:"Warehousing"},
+            {q:"Which mode of transport is usually fastest for long-distance international shipments?", options:["Road","Rail","Air","Sea"], answer:"Air"},
+            {q:"In logistics, what does 'last mile delivery' refer to?", options:["Transporting goods from factory to warehouse","Delivering goods from the warehouse to the final customer","Moving goods between warehouses","Shipping goods internationally"], answer:"Delivering goods from the warehouse to the final customer"}
+        ],
+        aigeneralist: [
+            {q:"What is the main goal of Artificial Intelligence?", options:["To replace all humans in the workforce","To create machines that can perform tasks requiring human intelligence","To store large amounts of data","To make computers run faster"], answer:"To create machines that can perform tasks requiring human intelligence"},
+            {q:"Which of the following is an example of a narrow AI system?", options:["A robot that can perform any human task","Google Maps suggesting the fastest route","An AI that can learn any new skill like a human","An AI that designs a spaceship autonomously"], answer:"Google Maps suggesting the fastest route"},
+            {q:"What does 'machine learning' allow AI systems to do?", options:["Memorize all data without analysis","Improve performance automatically from experience without being explicitly programmed","Function without electricity","Replace computer hardware"], answer:"Improve performance automatically from experience without being explicitly programmed"},
+            {q:"Which of the following is a common programming language used in AI development?", options:["Python","HTML","CSS","SQL"], answer:"Python"},
+            {q:"What is 'Natural Language Processing (NLP)' used for in AI?", options:["To recognize and process human language in text or speech","To calculate mathematical formulas faster","To store large datasets","To run video games"], answer:"To recognize and process human language in text or speech"}
+        ],
+        others: [
+            {q:"What is the best way to handle a conflict with a coworker?", options:["Ignore the problem and hope it goes away","Discuss the issue calmly and try to find a solution","Complain to everyone about the coworker","Quit the job immediately"], answer:"Discuss the issue calmly and try to find a solution"},
+            {q:"Which of the following shows good time management?", options:["Completing tasks only when reminded","Prioritizing tasks and meeting deadlines consistently","Doing multiple tasks at once without planning","Avoiding difficult tasks"], answer:"Prioritizing tasks and meeting deadlines consistently"},
+            {q:"When faced with a new task you don’t know how to do, what should you do?", options:["Ignore it and hope someone else does it","Learn and research how to complete it properly","Pretend you know how to do it","Complain to your supervisor"], answer:"Learn and research how to complete it properly"},
+            {q:"Why is it important to work well in a team?", options:["Teams always make decisions for you","Teamwork improves productivity and problem-solving","You don’t have to do any work if in a team","It shows that you avoid responsibility"], answer:"Teamwork improves productivity and problem-solving"},
+            {q:"What is the most professional way to respond to feedback?", options:["Ignore it","Get defensive and argue","Listen carefully, accept constructive criticism, and improve","Tell everyone the feedback was unfair"], answer:"Listen carefully, accept constructive criticism, and improve"}
+        ]
+    };
+
+    window.studentLogin = function() {
+        const name = document.getElementById("studentName").value.trim();
+        const phone = document.getElementById("studentPhone").value.trim();
+        if(!name || phone.length < 10) return alert("Please enter Name and 10-digit Phone.");
+        localStorage.setItem("studentName", name);
+        localStorage.setItem("studentPhone", phone);
+        document.getElementById("studentBox").style.display = "none";
+        document.getElementById("testBox").style.display = "block";
+    }
+
+    window.loadQuestions = function() {
+        const course = document.getElementById("course").value;
+        if(!course) return;
+        document.getElementById("course").disabled = true;
+        document.getElementById("questions").innerHTML = questionBank[course].map((item, i) => `
+            <div class="question-card">
+                <p><strong>${i+1}.</strong> ${item.q}</p>
+                ${item.options.map(opt => `<label class="option-pill"><input type="radio" name="q${i}" value="${opt}"> ${opt}</label>`).join('')}
+            </div>
+        `).join('');
+        document.getElementById("interestSection").style.display = "block";
+        startTimer();
+    }
+
+    function startTimer() {
+        let timeRemaining = TEST_DURATION;
+        document.getElementById("timerContainer").style.display = "block";
+        timerInterval = setInterval(() => {
+            let mins = Math.floor(timeRemaining / 60);
+            let secs = timeRemaining % 60;
+            document.getElementById("timeLeft").innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            if(timeRemaining <= 60) document.getElementById("timerContainer").classList.add("timer-warning");
+            if(timeRemaining <= 0) { clearInterval(timerInterval); checkResult(); }
+            timeRemaining--;
+        }, 1000);
+    }
+
+    window.checkResult = async function() {
+        const interest = document.getElementById("interestedCourse").value;
+        if(!interest) return alert("Select an interested course before submitting.");
+
+        document.getElementById("submitBtn").disabled = true;
+        document.getElementById("loading").style.display = "block";
+
+        clearInterval(timerInterval);
+        document.getElementById("timerContainer").style.display = "none";
+        const course = document.getElementById("course").value;
+        let score = 0;
+        let reviewHTML = "";
+
+        questionBank[course].forEach((q, i) => {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            const userAns = selected ? selected.value : "No Answer";
+            const isCorrect = userAns === q.answer;
+            if(isCorrect) score++;
+            reviewHTML += `<div class="review-card ${isCorrect ? 'review-correct' : 'review-wrong'}">
+                <p><strong>Q${i+1}:</strong> ${q.q}</p>
+                <p>Your Answer: ${userAns} ${!isCorrect ? ' | Correct: ' + q.answer : ''}</p>
+            </div>`;
+        });
+
+        const status = (score / questionBank[course].length) >= 0.6 ? "Placement Ready" : "Needs Training";
+        
+        try {
+            await addDoc(collection(db, "students"), {
+                name: localStorage.getItem("studentName"),
+                phone: localStorage.getItem("studentPhone"),
+                stream: course,
+                interest: interest,
+                score: `${score}/${questionBank[course].length}`,
+                status: status,
+                date: new Date().toLocaleString()
+            });
+
+            localStorage.setItem("lastResult", JSON.stringify({
+                name: localStorage.getItem("studentName"), 
+                score: `${score}/${questionBank[course].length}`, 
+                status: status
+            }));
+
+            document.getElementById("questions").style.display = "none";
+            document.getElementById("interestSection").style.display = "none";
+            document.getElementById("resultArea").style.display = "block";
+            document.getElementById("resultDiv").innerHTML = `Final Score: ${score}/${questionBank[course].length} <br> ${status}`;
+            document.getElementById("resultDiv").style.display = "block";
+            document.getElementById("reviewList").innerHTML = reviewHTML;
+        } catch (e) {
+            alert("Error saving result. Check connection.");
+            document.getElementById("submitBtn").disabled = false;
+        } finally {
+            document.getElementById("loading").style.display = "none";
+        }
+    }
+
+    window.downloadPDF = function() {
+        const data = JSON.parse(localStorage.getItem("lastResult"));
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.setFontSize(22); doc.setTextColor(0, 168, 255); doc.text("Skillmount Predictor Report", 20, 20);
+        doc.setFontSize(14); doc.setTextColor(0,0,0);
+        doc.text(`Student: ${data.name}`, 20, 40);
+        doc.text(`Score: ${data.score}`, 20, 50);
+        doc.text(`Status: ${data.status}`, 20, 60);
+        doc.save(`${data.name}_Result.pdf`);
+    }
+</script>
+</body>
+</html>
